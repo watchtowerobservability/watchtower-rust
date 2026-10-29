@@ -54,7 +54,7 @@ impl Config {
     pub fn from_env(service: &str) -> Self {
         let get = |k: &str| std::env::var(k).ok().filter(|v| !v.is_empty());
         let mut c = Self::new(
-            service,
+            &get("WT_SERVICE").unwrap_or_else(|| service.to_string()),
             get("WT_OTLP_ENDPOINT").or_else(|| get("WT_ENDPOINT")).as_deref(),
             get("WT_INGEST_KEY").as_deref(),
         );
@@ -64,13 +64,6 @@ impl Config {
         ] {
             if let Some(v) = get(var) {
                 c.resource.push(KeyValue::new(attr, v));
-            &get("WT_SERVICE").unwrap_or_else(|| service.to_string()),
-            get("WT_OTLP_ENDPOINT").or_else(|| get("WT_ENDPOINT")).as_deref(),
-            get("WT_INGEST_KEY").as_deref(),
-        );
-        for (k, v) in [("deployment.environment.name", "WT_ENVIRONMENT"), ("service.version", "WT_RELEASE")] {
-            if let Some(v) = get(v) {
-                c.resource.push(KeyValue::new(k, v));
             }
         }
         c
