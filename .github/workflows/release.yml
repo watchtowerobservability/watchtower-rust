@@ -1,0 +1,25 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo test
+      - run: cargo package --allow-dirty
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'target/package/*.crate'
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" target/package/*.crate --generate-notes --verify-tag

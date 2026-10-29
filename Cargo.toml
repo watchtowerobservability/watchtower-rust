@@ -1,0 +1,15 @@
+[package]
+name = "watchtower-sdk"
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/watchtowerobservability/watchtower-rust"
+description = "Thin Watchtower distribution over the OpenTelemetry Rust SDK"
+
+# Own workspace: this crate is published separately and must not add deps to the platform build.
+[workspace]
+
+[dependencies]
+opentelemetry = "0.31"
+opentelemetry_sdk = { version = "0.31", features = ["trace"] }
+opentelemetry-otlp = { version = "0.31", default-features = false, features = ["http-proto", "trace", "reqwest-rustls"] }
