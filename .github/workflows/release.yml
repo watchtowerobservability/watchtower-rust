@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: cargo test --all-features
       - run: cargo package --allow-dirty
-      - uses: actions/attest-build-provenance@v2
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: 'target/package/*.crate'
       - name: GitHub release
