@@ -1,7 +1,7 @@
 //! Error and panic capture that attaches to the active trace.
 
-use opentelemetry::trace::{Span, Status, TraceContextExt, Tracer};
-use opentelemetry::{Context, KeyValue, global};
+use opentelemetry::trace::{Span, Status, TraceContextExt, Tracer, TracerProvider};
+use opentelemetry::{Context, KeyValue};
 use opentelemetry_sdk::trace::SdkTracerProvider;
 
 fn exception_attrs(kind: &str, msg: &str, stack: Option<String>) -> Vec<KeyValue> {
@@ -46,7 +46,7 @@ pub fn capture_panics(provider: &SdkTracerProvider) {
             attrs.push(KeyValue::new("code.file.path", l.file().to_string()));
             attrs.push(KeyValue::new("code.line.number", i64::from(l.line())));
         }
-        let tracer = global::tracer("watchtower");
+        let tracer = provider.tracer("watchtower");
         let mut span = tracer.start_with_context("panic", &Context::current());
         span.add_event("exception", attrs);
         span.set_status(Status::error(msg));

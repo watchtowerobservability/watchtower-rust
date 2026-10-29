@@ -1,5 +1,5 @@
 use opentelemetry::global;
-use opentelemetry::trace::{Span, TraceContextExt, Tracer};
+use opentelemetry::trace::{Span, TraceContextExt, Tracer, TracerProvider};
 use opentelemetry_sdk::trace::{InMemorySpanExporter, SdkTracerProvider};
 
 fn provider() -> (SdkTracerProvider, InMemorySpanExporter) {
@@ -15,7 +15,7 @@ fn provider() -> (SdkTracerProvider, InMemorySpanExporter) {
 fn panic_hook_links_to_active_span() {
     let (p, ex) = provider();
     watchtower_sdk::capture_panics(&p);
-    let span = global::tracer("t").start("request");
+    let span = p.tracer("t").start("request");
     let tid = span.span_context().trace_id();
     let cx = opentelemetry::Context::current_with_span(span);
     let _g = cx.attach();
