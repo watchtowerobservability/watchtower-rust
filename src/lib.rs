@@ -118,11 +118,20 @@ pub fn redact(attrs: Vec<KeyValue>, r: Option<&Redactor>) -> Vec<KeyValue> {
 }
 
 /// Redacts, exports, and keeps failed batches for the next export.
-#[derive(Debug)]
 pub struct WatchtowerExporter<E> {
     inner: E,
     redactor: Option<Redactor>,
     pending: Mutex<OfflineBuffer<Vec<SpanData>>>,
+}
+
+impl<E: std::fmt::Debug> std::fmt::Debug for WatchtowerExporter<E> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("WatchtowerExporter")
+            .field("inner", &self.inner)
+            .field("redactor", &self.redactor.as_ref().map(|_| "<redactor>"))
+            .field("pending", &self.pending)
+            .finish()
+    }
 }
 
 impl<E> WatchtowerExporter<E> {
