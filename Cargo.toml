@@ -10,7 +10,7 @@ description = "Thin Watchtower distribution over the OpenTelemetry Rust SDK"
 [workspace]
 
 [dependencies]
-opentelemetry = "0.31"
+opentelemetry = "0.33"
 opentelemetry_sdk = { version = "0.31", features = ["trace"] }
 opentelemetry-otlp = { version = "0.31", default-features = false, features = ["http-proto", "trace", "reqwest-rustls"] }
 http = { version = "1", optional = true }
