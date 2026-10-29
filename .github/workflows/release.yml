@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cargo test
+      - run: cargo test --all-features
       - run: cargo package --allow-dirty
       - uses: actions/attest-build-provenance@v2
         with:

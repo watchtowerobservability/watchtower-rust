@@ -2,6 +2,15 @@
 //! offline buffer, `wt.*`-safe resource attributes and a redaction hook. No product logic.
 
 mod buffer;
+mod errors;
+#[cfg(feature = "actix")]
+pub mod actix;
+#[cfg(feature = "tower")]
+pub mod layer;
+#[cfg(feature = "tracing")]
+pub mod tracing_layer;
+
+pub use errors::{capture_panics, record_error};
 
 use std::sync::{Arc, Mutex};
 
@@ -39,15 +48,32 @@ impl std::fmt::Debug for Config {
 }
 
 impl Config {
-    /// Reads `WT_ENDPOINT` and `WT_INGEST_KEY`.
+    /// Reads `WT_OTLP_ENDPOINT` (`WT_ENDPOINT` is a deprecated alias), `WT_INGEST_KEY`, `WT_SERVICE`,
+    /// `WT_ENVIRONMENT` and `WT_RELEASE`; `service` is the fallback name.
     #[must_use]
     pub fn from_env(service: &str) -> Self {
         let get = |k: &str| std::env::var(k).ok().filter(|v| !v.is_empty());
-        Self::new(
+        let mut c = Self::new(
             service,
-            get("WT_ENDPOINT").as_deref(),
+            get("WT_OTLP_ENDPOINT").or_else(|| get("WT_ENDPOINT")).as_deref(),
             get("WT_INGEST_KEY").as_deref(),
-        )
+        );
+        for (var, attr) in [
+            ("WT_ENVIRONMENT", "deployment.environment.name"),
+            ("WT_RELEASE", "service.version"),
+        ] {
+            if let Some(v) = get(var) {
+                c.resource.push(KeyValue::new(attr, v));
+            &get("WT_SERVICE").unwrap_or_else(|| service.to_string()),
+            get("WT_OTLP_ENDPOINT").or_else(|| get("WT_ENDPOINT")).as_deref(),
+            get("WT_INGEST_KEY").as_deref(),
+        );
+        for (k, v) in [("deployment.environment.name", "WT_ENVIRONMENT"), ("service.version", "WT_RELEASE")] {
+            if let Some(v) = get(v) {
+                c.resource.push(KeyValue::new(k, v));
+            }
+        }
+        c
     }
 
     #[must_use]
@@ -148,6 +174,10 @@ impl<E: SpanExporter> SpanExporter for WatchtowerExporter<E> {
     async fn export(&self, mut batch: Vec<SpanData>) -> OTelSdkResult {
         for s in &mut batch {
             s.attributes = redact(std::mem::take(&mut s.attributes), self.redactor.as_ref());
+            // Exception events carry messages and stacks, so they get the same hook.
+            for ev in &mut s.events.events {
+                ev.attributes = redact(std::mem::take(&mut ev.attributes), self.redactor.as_ref());
+            }
         }
         let mut all = self
             .pending
