@@ -21,7 +21,7 @@ fancy-regex = { version = "0.14", optional = true }
 tower-layer = { version = "0.3", optional = true }
 tower-service = { version = "0.3", optional = true }
 tracing = { version = "0.1", optional = true }
-tracing-opentelemetry = { version = "0.32", optional = true }
+tracing-opentelemetry = { version = "0.34", optional = true }
 tracing-subscriber = { version = "0.3", optional = true }
 # Apache-2.0; `tracing` events as OTel log records, with the ids of tracing-opentelemetry spans
 opentelemetry-appender-tracing = { version = "0.31", features = ["experimental_use_tracing_span_context", "experimental_metadata_attributes"], optional = true }
