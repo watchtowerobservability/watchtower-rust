@@ -11,7 +11,7 @@ description = "Thin Watchtower distribution over the OpenTelemetry Rust SDK"
 
 [dependencies]
 opentelemetry = "0.31"
-opentelemetry_sdk = { version = "0.31", features = ["trace", "logs", "metrics"] }
+opentelemetry_sdk = { version = "0.33", features = ["trace", "logs", "metrics"] }
 opentelemetry-otlp = { version = "0.31", default-features = false, features = ["http-proto", "trace", "logs", "metrics", "reqwest-blocking-client", "reqwest-rustls"] }
 http = { version = "1", optional = true }
 regex = { version = "1", default-features = false, features = ["std", "unicode-case", "perf"], optional = true }
@@ -53,7 +53,7 @@ heed = ["datastores", "dep:heed"]
 moka = ["datastores", "dep:moka"]
 
 [dev-dependencies]
-opentelemetry_sdk = { version = "0.31", features = ["trace", "logs", "metrics", "testing"] }
+opentelemetry_sdk = { version = "0.33", features = ["trace", "logs", "metrics", "testing"] }
 tokio = { version = "1", features = ["rt", "macros"] }
 tower = { version = "0.5", features = ["util"] }
 http = "1"
