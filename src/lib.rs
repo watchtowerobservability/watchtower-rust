@@ -3,14 +3,22 @@
 
 mod buffer;
 mod errors;
+pub mod signals;
 #[cfg(feature = "actix")]
 pub mod actix;
+#[cfg(feature = "appsec")]
+pub mod appsec;
+#[cfg(feature = "datastores")]
+pub mod datastore;
 #[cfg(feature = "tower")]
 pub mod layer;
+#[cfg(feature = "profiling")]
+pub mod profiling;
 #[cfg(feature = "tracing")]
 pub mod tracing_layer;
 
 pub use errors::{capture_panics, record_error};
+pub use signals::{init_logs, init_metrics};
 
 use std::sync::{Arc, Mutex};
 

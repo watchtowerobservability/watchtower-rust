@@ -1,7 +1,10 @@
 //! `tracing` integration: spans and events become OTel spans; `error!` events become
-//! `exception` span events via tracing-opentelemetry.
+//! `exception` span events via tracing-opentelemetry. `log_layer` also exports every event as an
+//! OTLP log record (opentelemetry-appender-tracing) carrying the enclosing span's ids.
 
 use opentelemetry::trace::TracerProvider;
+use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
+use opentelemetry_sdk::logs::{SdkLogger, SdkLoggerProvider};
 use opentelemetry_sdk::trace::{SdkTracer, SdkTracerProvider};
 use tracing::Subscriber;
 use tracing_opentelemetry::OpenTelemetryLayer;
@@ -13,4 +16,12 @@ where
     S: Subscriber + for<'a> LookupSpan<'a>,
 {
     tracing_opentelemetry::layer().with_tracer(provider.tracer("watchtower"))
+}
+
+/// Layer that exports `tracing` events as log records through `provider` (see `init_logs`).
+#[must_use]
+pub fn log_layer(
+    provider: &SdkLoggerProvider,
+) -> OpenTelemetryTracingBridge<SdkLoggerProvider, SdkLogger> {
+    OpenTelemetryTracingBridge::new(provider)
 }

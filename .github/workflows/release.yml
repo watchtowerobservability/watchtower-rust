@@ -23,3 +23,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "$GITHUB_REF_NAME" target/package/*.crate --generate-notes --verify-tag
+      - name: crates.io publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          v="$(cargo metadata --no-deps --format-version 1 | python3 -c 'import json,sys;print(json.load(sys.stdin)["packages"][0]["version"])')"
+          if curl -fsS -o /dev/null "https://crates.io/api/v1/crates/watchtower-sdk/$v"; then echo "watchtower-sdk $v already on crates.io"; exit 0; fi
+          cargo publish --locked
