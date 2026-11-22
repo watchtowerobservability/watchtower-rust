@@ -12,7 +12,7 @@ description = "Thin Watchtower distribution over the OpenTelemetry Rust SDK"
 [dependencies]
 opentelemetry = "0.31"
 opentelemetry_sdk = { version = "0.31", features = ["trace", "logs", "metrics"] }
-opentelemetry-otlp = { version = "0.31", default-features = false, features = ["http-proto", "trace", "logs", "metrics", "reqwest-blocking-client", "reqwest-rustls"] }
+opentelemetry-otlp = { version = "0.33", default-features = false, features = ["http-proto", "trace", "logs", "metrics", "reqwest-blocking-client", "reqwest-rustls"] }
 http = { version = "1", optional = true }
 regex = { version = "1", default-features = false, features = ["std", "unicode-case", "perf"], optional = true }
 serde_json = { version = "1", optional = true }
