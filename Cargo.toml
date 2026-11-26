@@ -17,7 +17,7 @@ http = { version = "1", optional = true }
 regex = { version = "1", default-features = false, features = ["std", "unicode-case", "perf"], optional = true }
 serde_json = { version = "1", optional = true }
 # MIT; look-around and back-references for WAF rules the regex crate rejects
-fancy-regex = { version = "0.14", optional = true }
+fancy-regex = { version = "0.20", optional = true }
 tower-layer = { version = "0.3", optional = true }
 tower-service = { version = "0.3", optional = true }
 tracing = { version = "0.1", optional = true }
